@@ -1,0 +1,104 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<br>
+<div class="container">
+	<div class="row">
+		<div class="col-6">
+			<h3>Generated files</h3>
+			<small id="emailHelp" class="form-text text-muted">Click in link to download it.</small>
+			<ul class="list-group">
+				{% if files|length<=0 %}
+				<div class="alert alert-primary" role="alert">
+					There is not files yet.
+				</div>
+				{% endif %}
+				{% for file in files %}
+				<li class="list-group-item d-flex justify-content-between align-items-center"><a
+						href="/get_file?filename={{file}}">{{file}}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		<div class="col-6  float-right">
+			<h3>Form for simulation</h3>
+			<small id="emailHelp" class="form-text text-muted">This form is not validated.</small>
+			<form>
+				<div class="form-group">
+					<label for="txt1">Increase data</label>
+					<input type="number" name="idata" placeholder="Increase data" id="txt1" class="form-control"
+						value="1">
+				</div>
+				<div class="form-group">
+					<label for="txt2">Difficulty</label>
+					<input type="number" name="difficulty" id="txt2" class="form-control" placeholder="Difficulty"
+						value="2">
+				</div>
+
+				<button type="button" class="btn btn-primary" onclick="run()">Run sumulation</button>
+			</form>
+
+		</div>
+
+	</div>
+	<hr>
+	<br>
+	<div class="row">
+		<pre id="output" class="carbonads"></pre>
+	</div>
+
+
+
+</div>
+<script>
+
+
+	var output = document.getElementById('output');
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', '{{ url_for('stream') }}');
+	xhr.send();
+
+	setInterval(function () {
+		output.textContent = xhr.responseText;
+		output.scrollTop = 100000000000000;
+		console.log(output.textContent)
+	}, 100);
+
+
+
+	function run() {
+		output.textContent = ""
+		var idata = document.getElementById('txt1').value;
+		var difficulty = document.getElementById('txt2').value;
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '{{ url_for('run_simulator') }}');
+		xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhr.send(JSON.stringify({ "idata": idata, "difficulty": difficulty }));
+
+	}
+</script>
+
+
+<style>
+	.carbonads {
+		position: static;
+		display: block;
+		padding: 20px;
+		font-size: .8125rem;
+		line-height: 1.4;
+		max-height: 300px;
+		height: 300px;
+		text-align: left;
+		width: 100%;
+		background-color: rgba(0, 0, 0, .05);
+		overflow-y: scroll;
+	}
+
+	ul {
+		max-height: 200px;
+		overflow-y: scroll;
+	}
+</style>
+{% endblock %}
