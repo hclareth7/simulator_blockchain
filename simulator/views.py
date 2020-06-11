@@ -76,7 +76,7 @@ def run(amount_of_data, difficulty):
     datastore = ""
     results = []
     results.append(
-        'timestamp_transactions,amount_of_data,difficulty,mine_time(sec)')
+        'timestamp_transactions,amount_of_data,transmition_time, difficulty,mine_time(sec), sum_of_time')
 
     with open(filename, 'r') as f:
         datastore = json.load(f)
@@ -94,7 +94,7 @@ def run(amount_of_data, difficulty):
         requests.get(new_tx_address)
 
         time = datetime.now() - startTime
-        result = f"{key}, {amount_of_data}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()}"
+        result = f"{key}, {amount_of_data}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()},{(time_amount+time).total_seconds()} "
         logger.info(f"simulator {result}")
         results.append(result)
 
