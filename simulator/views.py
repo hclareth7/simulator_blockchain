@@ -94,7 +94,7 @@ def run(amount_of_data, difficulty):
         requests.get(new_tx_address)
 
         time = datetime.now() - startTime
-        result = f"{key}, {i}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()}"
+        result = f"{key}, {amount_of_data}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()}"
         logger.info(f"simulator {result}")
         results.append(result)
 
