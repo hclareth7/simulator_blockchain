@@ -75,28 +75,28 @@ def run(amount_of_data, difficulty):
     filename = 'data.json'
     datastore = ""
     results = []
-    results.append('timestamp_transactions,amount_of_data,difficulty,mine_time(sec)')
+    results.append(
+        'timestamp_transactions,amount_of_data,difficulty,mine_time(sec)')
 
     with open(filename, 'r') as f:
         datastore = json.load(f)
 
     for key, value in datastore.items():
-        for i in range(0, amount_of_data):
-            new_value = json.dumps(value) * (i+1)
+        new_value = json.dumps(value) * amount_of_data
 
-            startTime_amount = datetime.now()
-            submit_textarea(key, new_value)
-            time_amount = datetime.now() - startTime_amount
+        startTime_amount = datetime.now()
+        submit_textarea(key, new_value)
+        time_amount = datetime.now() - startTime_amount
 
-            new_tx_address = f"{CONNECTED_NODE_ADDRESS}/mine?difficulty={difficulty}"
-            startTime = datetime.now()
+        new_tx_address = f"{CONNECTED_NODE_ADDRESS}/mine?difficulty={difficulty}"
+        startTime = datetime.now()
 
-            requests.get(new_tx_address)
+        requests.get(new_tx_address)
 
-            time = datetime.now() - startTime
-            result = f"{key}, {i}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()}"
-            logger.info(f"simulator {result}")
-            results.append(result)
+        time = datetime.now() - startTime
+        result = f"{key}, {i}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()}"
+        logger.info(f"simulator {result}")
+        results.append(result)
 
     create_file_from_list(
         f'simulator/resources/output_{datetime.now()}_diff{difficulty}_amount{amount_of_data}.csv', results)
