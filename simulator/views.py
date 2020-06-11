@@ -10,7 +10,6 @@ from simulator import app
 import logging
 
 
-
 logger = logging.getLogger('simulator')
 
 logger.setLevel(logging.DEBUG)
@@ -21,7 +20,8 @@ fh.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.ERROR)
 # create formatter and add it to the handlers
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 ch.setFormatter(formatter)
 # add the handlers to the logger
@@ -75,7 +75,7 @@ def run(amount_of_data, difficulty):
     filename = 'data.json'
     datastore = ""
     results = []
-    results.append('timestamp_transactions,mine_time(sec)')
+    results.append('timestamp_transactions,amount_of_data,difficulty,mine_time(sec)')
 
     with open(filename, 'r') as f:
         datastore = json.load(f)
@@ -83,12 +83,18 @@ def run(amount_of_data, difficulty):
     for key, value in datastore.items():
         for i in range(0, amount_of_data):
             new_value = json.dumps(value) * (i+1)
+
+            startTime_amount = datetime.now()
             submit_textarea(key, new_value)
+            time_amount = datetime.now() - startTime_amount
+
             new_tx_address = f"{CONNECTED_NODE_ADDRESS}/mine?difficulty={difficulty}"
             startTime = datetime.now()
+
             requests.get(new_tx_address)
+
             time = datetime.now() - startTime
-            result = f"{key}, {time.total_seconds()}"
+            result = f"{key}, {i}, {difficulty}, {time_amount.total_seconds()}, {time.total_seconds()}"
             logger.info(f"simulator {result}")
             results.append(result)
 
@@ -144,9 +150,8 @@ def stream():
             while True:
                 yield f.read()
                 sleep(1)
-                
-                
 
     return app.response_class(generate(), mimetype='text/plain')
+
 
 truncate_file()
